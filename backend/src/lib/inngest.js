@@ -18,6 +18,8 @@ const syncUser = inngest.createFunction(
             name: `${first_name || ""} ${last_name || ""}`,
             profileImage: image_url,
         };
+
+         await User.create(newUser);
     }
 );
 
