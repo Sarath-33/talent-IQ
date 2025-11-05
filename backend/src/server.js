@@ -3,9 +3,10 @@ import { ENV } from "./lib/env.js";
 import path from "path";
 import { connectDB } from "./lib/db.js";
 import cors from "cors"
-import {serve} from "inngest/express"
-import { inngest ,functions} from "./lib/inngest.js";
-
+import { serve } from "inngest/express"
+import { inngest, functions } from "./lib/inngest.js";
+import { clerkMiddleware } from '@clerk/express'
+import chatRoutes from "./routes/chatRoutes.js"
 
 const app = express();
 const PORT = ENV.PORT;
@@ -18,16 +19,14 @@ app.use(cors({
     origin: ENV.CLIENT_URL,
     credentials: true
 }));
+app.use(clerkMiddleware())//when we use this we can access the req,auth()
 
-app.use("/api/inngest",serve({client: inngest, functions}))
-
+app.use("/api/inngest", serve({ client: inngest, functions }))
+app.use("/api/chat", chatRoutes)
 
 
 app.get("/test", (req, res) => {
     res.status(201).json({ message: "testing 1" });
-});
-app.get("/testing", (req, res) => {
-    res.status(201).json({ message: "testing2" });
 });
 
 
@@ -47,7 +46,7 @@ const startServer = async () => {
             console.log(`Port is listening to ${PORT}`);
         });
     } catch (error) {
-        console.log("Error at starting server",error);
+        console.log("Error at starting server", error);
     }
 
 }
